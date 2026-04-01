@@ -1,412 +1,429 @@
-// SPA "Банк покупок". Все состояния храним в localStorage.
-const STORAGE_KEY = 'kalykShynykState_v1';
-const FIVE_HOURS_MS = 5 * 60 * 60 * 1000;
+const STORAGE_KEY = 'kalykShynykPro_v2';
+const STAGE_QR_PREFIX = 'KALYK-MALL-STAGE-';
+const LIMIT_MS = 5 * 60 * 60 * 1000;
 
 const translations = {
   ru: {
-    subtitle: 'Банк покупок',
-    buy: 'Купить', quest: 'Пройти квест',
-    mockupTitle: 'Макет интерфейса',
-    mockupText: 'Экран 1: Логотип и выбор сценария. Экран 2: Магазин с карточками и корзиной. Экран 3: Квест из 10 этапов: поиск точки, QR, ответы, фото. Экран 4: Награда и сертификат.',
-    homeHint: 'Этно-квест в торговом центре: культура марийцев + современные покупки.',
-    shop: 'Магазин', cart: 'Корзина', order: 'Оформить', name: 'Имя', phone: 'Телефон',
-    scanQr: 'Сканировать QR', stopQr: 'Остановить сканер',
-    checkoutOk: 'Заказ принят! Мы свяжемся с вами.',
-    questTitle: 'Квест «Банк покупок»',
-    questStart: 'Начать/продолжить',
+    subtitle: 'Банк покупок PRO',
+    mockup: 'Визуальный mockup',
+    mockupText: 'Премиум-поток: Главный экран → CRM + Магазин → Квест по точкам ТЦ (QR/фото/ответы) → Награда → Спасибо и выдача приза на кассе.',
+    buy: 'Перейти в магазин',
+    quest: 'Начать квест',
+    crmTitle: 'Контакт участника',
+    name: 'Имя', phone: 'Телефон', saveContact: 'Сохранить контакт',
+    shopTitle: 'Подарки и мерч', add: 'Добавить', cart: 'Корзина', checkout: 'Подтвердить заказ',
+    payDemo: 'Оплата (демо)',
+    questTitle: 'Квест по торговому центру',
     stage: 'Этап', findPoint: 'Найди точку',
-    qrInstruction: 'Найди стенд в ТЦ и отсканируй QR для продолжения.',
-    answerPlaceholder: 'Введите ответ', submit: 'Подтвердить',
-    uploadPhoto: 'Загрузите фото',
-    timerLeft: 'Осталось времени',
-    finished: 'Квест завершён! Выберите награду',
-    obtained: 'Получено', certificate: 'Сертификат участника',
-    qrFail: 'Неверный QR для этого этапа',
-    noCamera: 'Камера недоступна. Проверьте разрешения.',
-    reward: 'Награда',
-    payDemo: 'Оплатить (демо)',
+    scan: 'Сканировать QR', stop: 'Остановить сканер',
+    qrNeeded: 'Сначала отсканируйте QR в этой точке.',
+    submit: 'Подтвердить', answerPh: 'Введите ответ',
+    timer: 'Лимит времени',
+    rewardTitle: 'Выберите награду',
+    certificate: 'Сертификат участника',
+    obtained: 'Получено',
+    thanksTitle: 'Спасибо за участие!',
+    cashier: 'Покажите этот экран на кассе для выдачи приза.',
+    issuePrize: 'Выдать приз на кассе',
+    issued: 'Приз отмечен как выдан',
+    qrFail: 'QR-код не подходит к текущему этапу.',
+    noCamera: 'Камера недоступна или нет HTTPS.',
+    done: 'Готово'
   },
   en: {
-    subtitle: 'Bank of Purchases',
-    buy: 'Buy', quest: 'Start Quest',
-    mockupTitle: 'Interface mockup',
-    mockupText: 'Screen 1: Logo + mode selection. Screen 2: Shop with products and cart. Screen 3: 10-stage quest: location, QR, answers, photo. Screen 4: Reward and certificate.',
-    homeHint: 'Mall offline quest: Mari culture + modern UX.',
-    shop: 'Shop', cart: 'Cart', order: 'Checkout', name: 'Name', phone: 'Phone',
-    scanQr: 'Scan QR', stopQr: 'Stop scanner',
-    checkoutOk: 'Order confirmed! We will contact you.',
-    questTitle: 'Quest “Bank of Purchases”',
-    questStart: 'Start/Continue',
+    subtitle: 'Bank of Purchases PRO',
+    mockup: 'Visual mockup',
+    mockupText: 'Premium flow: Home → CRM + Shop → Mall Quest points (QR/photo/answers) → Reward → Thank-you & cashier redemption.',
+    buy: 'Open shop', quest: 'Start quest',
+    crmTitle: 'Participant contact',
+    name: 'Name', phone: 'Phone', saveContact: 'Save contact',
+    shopTitle: 'Gifts & merch', add: 'Add', cart: 'Cart', checkout: 'Confirm order',
+    payDemo: 'Payment (demo)',
+    questTitle: 'Mall location quest',
     stage: 'Stage', findPoint: 'Find point',
-    qrInstruction: 'Find the ornament stand in the mall and scan a QR code.',
-    answerPlaceholder: 'Type answer', submit: 'Submit',
-    uploadPhoto: 'Upload photo',
-    timerLeft: 'Time left',
-    finished: 'Quest completed! Choose your reward',
-    obtained: 'Obtained', certificate: 'Participant certificate',
-    qrFail: 'Wrong QR for this stage',
-    noCamera: 'Camera unavailable. Check permissions.',
-    reward: 'Reward',
-    payDemo: 'Pay (demo)',
+    scan: 'Scan QR', stop: 'Stop scanner',
+    qrNeeded: 'Scan QR at this location first.',
+    submit: 'Submit', answerPh: 'Type answer',
+    timer: 'Time limit',
+    rewardTitle: 'Choose reward',
+    certificate: 'Participant certificate',
+    obtained: 'Obtained',
+    thanksTitle: 'Thanks for participating!',
+    cashier: 'Show this screen at cashier to redeem prize.',
+    issuePrize: 'Redeem at cashier',
+    issued: 'Prize marked as redeemed',
+    qrFail: 'QR does not match this stage.',
+    noCamera: 'Camera unavailable or HTTPS missing.',
+    done: 'Done'
   },
   mari: {
-    subtitle: 'Нал покупки банк',
-    buy: 'Налаш', quest: 'Квестым эрташ',
-    mockupTitle: 'Интерфейс макет',
-    mockupText: '1 экран: логотип да ойлымаш. 2 экран: туар кумыл. 3 экран: 10 этап, QR, вашмут, фото. 4 экран: сайлык да сертификат.',
-    homeHint: 'Марий культур квест, ТЦ дене.',
-    shop: 'Кевыт', cart: 'Корзина', order: 'Заказ', name: 'Лӱм', phone: 'Телефон',
-    scanQr: 'QR скан', stopQr: 'Сканым чарен',
-    checkoutOk: 'Заказ ужын! Тый денет кылдалташ.',
-    questTitle: 'Квест «Банк покупок»',
-    questStart: 'Тӱҥалаш/шуйын колташ',
-    stage: 'Этап', findPoint: 'Точкым муаш',
-    qrInstruction: 'ТЦ-ште орнамент стендым му да QR сканле.',
-    answerPlaceholder: 'Вашмутым возо', submit: 'Ыштен ончыкте',
-    uploadPhoto: 'Фотом колтымо',
-    timerLeft: 'Жап кодеш',
-    finished: 'Квест пытым! Сайлыкым ойло',
-    obtained: 'Налын', certificate: 'Участник сертификат',
-    qrFail: 'Тиде этаплан QR йӧн огыл',
-    noCamera: 'Камера уке.',
-    reward: 'Сайлык',
+    subtitle: 'Банк покупок PRO',
+    mockup: 'Визуал макет',
+    mockupText: 'Премиум поток: Тӱҥ экран → CRM + кевыт → ТЦ квест (QR/фото/вашмут) → сайлык → кассыште налмаш.',
+    buy: 'Кевытыш пуро', quest: 'Квестым тӱҥал',
+    crmTitle: 'Участник контакт',
+    name: 'Лӱм', phone: 'Телефон', saveContact: 'Контактым аралаш',
+    shopTitle: 'Подарке-влак', add: 'Умдаш', cart: 'Корзина', checkout: 'Заказым шындыш',
     payDemo: 'Тӱлыме (демо)',
+    questTitle: 'ТЦ квест',
+    stage: 'Этап', findPoint: 'Точкым муаш',
+    scan: 'QR скан', stop: 'Скан чарен',
+    qrNeeded: 'Ончыч QR сканле.',
+    submit: 'Шындаш', answerPh: 'Вашмутым возо',
+    timer: 'Жап лимит',
+    rewardTitle: 'Сайлыкым ойло',
+    certificate: 'Сертификат',
+    obtained: 'Налын',
+    thanksTitle: 'Тау лийже!',
+    cashier: 'Тиде экран кассыште ончыкто.',
+    issuePrize: 'Кассыште пуаш',
+    issued: 'Сайлык пуымо палемдалтын',
+    qrFail: 'Тиде этаплан QR ок келше.',
+    noCamera: 'Камера лийын огыл.',
+    done: 'Пытым'
   }
 };
 
 const products = [
-  { id: 'bag', emoji: '🎒', price: 1900, name: { ru: 'Сумка', en: 'Bag', mari: 'Сумка' } },
-  { id: 'toy', emoji: '🧸', price: 1200, name: { ru: 'Игрушка', en: 'Toy', mari: 'Уенчык' } },
-  { id: 'ring', emoji: '💍', price: 2300, name: { ru: 'Украшение', en: 'Jewelry', mari: 'Украшений' } },
-  { id: 'card', emoji: '💌', price: 300, name: { ru: 'Открытка', en: 'Postcard', mari: 'Открытка' } }
+  { id: 'bag', emoji: '🎒', price: 2900, ru: 'Сумка', en: 'Bag', mari: 'Сумка' },
+  { id: 'toy', emoji: '🧸', price: 1800, ru: 'Игрушка', en: 'Toy', mari: 'Уенчык' },
+  { id: 'ring', emoji: '💍', price: 3500, ru: 'Украшение', en: 'Jewelry', mari: 'Украшений' },
+  { id: 'card', emoji: '💌', price: 450, ru: 'Открытка', en: 'Postcard', mari: 'Открытка' }
+];
+
+const stageNarratives = [
+  {
+    quote: { ru: '«Традиция живёт, когда ею делятся».', en: '“Tradition lives when shared.”', mari: '«Традиций ушна, кунам поделитлалтеш». ' },
+    fact: { ru: 'Марийцы бережно хранят орнаменты с символами солнца, коня и утки.', en: 'Mari people preserve ornaments with sun, horse, and duck symbols.', mari: 'Марий-влак кече, имне, лудо символым аралат.' },
+    story: { ru: 'История: семейные узоры часто передавались по женской линии.', en: 'Story: family ornament patterns were often passed through mothers.', mari: 'Историй: узор-влак еш дене колталтеш.' }
+  },
+  {
+    quote: { ru: '«Смысл вещей рождается в контексте».', en: '“Things gain meaning in context.”', mari: '«Паша контекстыште шочеш». ' },
+    fact: { ru: 'Музыкальный инструмент шувыр сопровождал праздники и обряды.', en: 'Shuvyr accompanied ceremonies and festivals.', mari: 'Шӱвыр пайрем ден обрядла деке коштеш.' },
+    story: { ru: 'История: мастера создавали инструменты индивидуально под голос.', en: 'Story: instruments were handcrafted to match each performer.', mari: 'Историй: инструмент-влак шке койыш да тӱрлыме.' }
+  }
 ];
 
 const questStages = [
-  { point: 'Фудкорт: стенд с солнцем', qr: 'KALYK-STAGE-1', type: 'choice', q: {ru:'Что символизирует солнце в марийском орнаменте?', en:'What does the sun symbolize in Mari ornament?', mari:'Кече символ мом ончыкта?'}, options:[['life','Жизнь','Life','Илыме'],['water','Вода','Water','Вӱд']], correct: 'life' },
-  { point: 'Книжный остров: полка этно', qr: 'KALYK-STAGE-2', type: 'text', q: {ru:'Назовите традиционный марийский музыкальный инструмент.', en:'Name a traditional Mari musical instrument.', mari:'Традиций марий инструмент?'} , answer:['шувыр','shuvyr'] },
-  { point: 'Зона ремёсел: конь-орнамент', qr: 'KALYK-STAGE-3', type: 'photo', q: {ru:'Сделайте фото орнамента «конь».', en:'Take a photo of horse ornament.', mari:'«Имне» орнамент фото.'}},
-  { point: 'Этаж 2: утиный символ', qr: 'KALYK-STAGE-4', type: 'choice', q:{ru:'Какой символ связан с водой?', en:'Which symbol is linked with water?', mari:'Кӧ символ вӱд дене?'}, options:[['duck','Утка','Duck','Лудо'],['sun','Солнце','Sun','Кече']], correct:'duck' },
-  { point: 'Зона отдыха: этно-панно', qr: 'KALYK-STAGE-5', type: 'text', q:{ru:'Введите слово «Калык».', en:'Enter the word “Kalyk”.', mari:'«Калык» мутым возо.'}, answer:['калык','kalyk'] },
-  { point: 'Маркет-холл: стойка подарков', qr: 'KALYK-STAGE-6', type: 'choice', q:{ru:'Что чаще дарят на этно-фестивале?', en:'What is often gifted at ethno festivals?', mari:'Этно фестивальыште мом пуат?'}, options:[['postcard','Открытка','Postcard','Открытка'],['stone','Камень','Stone','Кӱ'] ], correct:'postcard' },
-  { point: 'Фото-зона: рамка с орнаментом', qr: 'KALYK-STAGE-7', type: 'photo', q:{ru:'Сделайте селфи у этно-рамки.', en:'Take selfie near ethno frame.', mari:'Этно рамка пелен селфи.'}},
-  { point: 'Лавка мастера: украшения', qr: 'KALYK-STAGE-8', type: 'text', q:{ru:'Введите «мари».', en:'Type “mari”.', mari:'«mari» возо.'}, answer:['мари','mari'] },
-  { point: 'Инфостойка: карта квеста', qr: 'KALYK-STAGE-9', type: 'choice', q:{ru:'Сколько этапов в квесте?', en:'How many quest stages?', mari:'Квестыште кумыл этап?'}, options:[['10','10','10','10'],['8','8','8','8']], correct:'10' },
-  { point: 'Финальный стенд: Калык шынык', qr: 'KALYK-STAGE-10', type: 'text', q:{ru:'Введите кодовое слово «шынык».', en:'Enter code word “shynyk”.', mari:'«шынык» код мут.'}, answer:['шынык','shynyk'] }
+  { point: 'Вход А: стенд с солнечным знаком', qr: `${STAGE_QR_PREFIX}1`, type: 'choice', q: { ru: 'Солнце в орнаменте означает…', en: 'Sun in ornament means…', mari: 'Кече орнаментыште мом ончыкта?' }, options: [['life', 'Жизнь', 'Life', 'Илыме'], ['trade', 'Торговлю', 'Trade', 'Сатыме']], correct: 'life' },
+  { point: 'Фуд-холл: зона с этно-панно', qr: `${STAGE_QR_PREFIX}2`, type: 'text', q: { ru: 'Введите: шувыр', en: 'Type: shuvyr', mari: 'Возо: шувыр' }, answer: ['шувыр', 'shuvyr'] },
+  { point: 'Лестница B: табличка «Конь»', qr: `${STAGE_QR_PREFIX}3`, type: 'photo', q: { ru: 'Сделайте фото символа «конь».', en: 'Take photo of the horse symbol.', mari: '«Имне» символ фото.' } },
+  { point: '2 этаж: витрина с уткой', qr: `${STAGE_QR_PREFIX}4`, type: 'choice', q: { ru: 'Символ воды — это…', en: 'Water symbol is…', mari: 'Вӱд символ…' }, options: [['duck', 'Утка', 'Duck', 'Лудо'], ['sun', 'Солнце', 'Sun', 'Кече']], correct: 'duck' },
+  { point: 'Точка 5: зона ремесла', qr: `${STAGE_QR_PREFIX}5`, type: 'text', q: { ru: 'Введите слово: калык', en: 'Type word: kalyk', mari: 'Возо: калык' }, answer: ['калык', 'kalyk'] },
+  { point: 'Точка 6: маркет остров', qr: `${STAGE_QR_PREFIX}6`, type: 'choice', q: { ru: 'Что дарят чаще на этно-мероприятии?', en: 'Most common ethno-event gift?', mari: 'Этно пайремыште мом пуаҥ?' }, options: [['postcard', 'Открытка', 'Postcard', 'Открытка'], ['ticket', 'Билет', 'Ticket', 'Билет']], correct: 'postcard' },
+  { point: 'Точка 7: фото-рамка', qr: `${STAGE_QR_PREFIX}7`, type: 'photo', q: { ru: 'Сделайте селфи у рамки.', en: 'Take selfie at frame.', mari: 'Рамка пелен селфи.' } },
+  { point: 'Точка 8: лавка мастера', qr: `${STAGE_QR_PREFIX}8`, type: 'text', q: { ru: 'Введите: мари', en: 'Type: mari', mari: 'Возо: мари' }, answer: ['мари', 'mari'] },
+  { point: 'Точка 9: инфо-стойка', qr: `${STAGE_QR_PREFIX}9`, type: 'choice', q: { ru: 'Сколько этапов в квесте?', en: 'How many stages?', mari: 'Мыняр этап?' }, options: [['10', '10', '10', '10'], ['9', '9', '9', '9']], correct: '10' },
+  { point: 'Точка 10: финальный стенд', qr: `${STAGE_QR_PREFIX}10`, type: 'text', q: { ru: 'Введите код: шынык', en: 'Type code: shynyk', mari: 'Код возо: шынык' }, answer: ['шынык', 'shynyk'] }
 ];
 
-let state = loadState();
-let qrScanner = null;
-let timerTick = null;
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || {
+  lang: 'ru',
+  screen: 'home',
+  sound: true,
+  crm: { name: '', phone: '' },
+  cart: [],
+  questStage: 0,
+  stageUnlocked: {},
+  photos: {},
+  reward: null,
+  startedAt: null,
+  prizeIssued: false
+};
 
 const app = document.getElementById('app');
-const langSelect = document.getElementById('languageSelect');
+const langSelect = document.getElementById('lang');
 const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const modalText = document.getElementById('modalText');
+let qrScanner = null;
 
-function t(key) { return translations[state.lang][key] || key; }
+function t(k) { return translations[state.lang][k] || k; }
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function productName(p) { return p[state.lang] || p.ru; }
 
-function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) return JSON.parse(raw);
-  return {
-    lang: 'ru',
-    screen: 'home',
-    cart: [],
-    questStage: 0,
-    questStartedAt: null,
-    reward: null,
-    answers: {},
-    photos: {},
-    soundOn: true
-  };
+function ping(freq = 520, dur = 80) {
+  if (!state.sound) return;
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+  const o = audio.createOscillator(); const g = audio.createGain();
+  o.connect(g); g.connect(audio.destination);
+  o.frequency.value = freq; g.gain.value = 0.03;
+  o.start(); setTimeout(() => { o.stop(); audio.close(); }, dur);
 }
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-function playTone(freq = 520, dur = 90) {
-  if (!state.soundOn) return;
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.frequency.value = freq;
-  osc.type = 'sine';
-  osc.connect(gain); gain.connect(ctx.destination);
-  gain.gain.value = 0.03;
-  osc.start();
-  setTimeout(() => { osc.stop(); ctx.close(); }, dur);
+function setLangOptions() {
+  langSelect.innerHTML = '<option value="ru">RU</option><option value="en">EN</option><option value="mari">MARI</option>';
+  langSelect.value = state.lang;
 }
 
 function render() {
-  document.getElementById('brandSubtitle').textContent = t('subtitle');
-  document.documentElement.lang = state.lang;
-  langSelect.value = state.lang;
-
+  document.getElementById('subtitle').textContent = t('subtitle');
+  setLangOptions();
   if (state.screen === 'home') renderHome();
   if (state.screen === 'shop') renderShop();
   if (state.screen === 'quest') renderQuest();
   if (state.screen === 'reward') renderReward();
+  if (state.screen === 'thanks') renderThanks();
 }
 
 function renderHome() {
   app.innerHTML = `
-    <section class="screen card">
-      <div class="badge">${t('mockupTitle')}</div>
+  <section class="screen hero glass trapezoid">
+    <div class="kpi">
+      <span class="badge">${t('mockup')}</span>
       <p>${t('mockupText')}</p>
-      <p>${t('homeHint')}</p>
-      <button class="primary-btn" id="goShop">🛒 ${t('buy')}</button>
-      <button class="secondary-btn" id="goQuest">🎮 ${t('quest')}</button>
-    </section>`;
-  document.getElementById('goShop').onclick = () => setScreen('shop');
-  document.getElementById('goQuest').onclick = () => setScreen('quest');
-}
+    </div>
 
-function renderShop() {
-  const items = products.map(p => {
-    const count = state.cart.filter(x => x === p.id).length;
-    return `<article class="product">
-      <div class="product-image">${p.emoji}</div>
-      <div><strong>${p.name[state.lang]}</strong><br><small>${p.price} ₽</small></div>
-      <button class="secondary-btn" data-add="${p.id}">+ (${count})</button>
-    </article>`;
-  }).join('');
+    <article class="crm">
+      <h3>${t('crmTitle')}</h3>
+      <div class="grid">
+        <div class="row"><label>${t('name')}</label><input id="crmName" value="${state.crm.name}" /></div>
+        <div class="row"><label>${t('phone')}</label><input id="crmPhone" value="${state.crm.phone}" /></div>
+      </div>
+      <div class="inline" style="margin-top:8px;">
+        <button class="btn primary" id="saveContact">${t('saveContact')}</button>
+      </div>
+    </article>
 
-  const total = state.cart.reduce((sum, id) => sum + products.find(p => p.id === id).price, 0);
-
-  app.innerHTML = `
-  <section class="screen card">
-    <h2>${t('shop')}</h2>
-    <div class="grid-products">${items}</div>
-    <h3>${t('cart')}: ${state.cart.length} / ${total} ₽</h3>
-    <div class="row"><label>${t('name')}</label><input id="orderName"/></div>
-    <div class="row"><label>${t('phone')}</label><input id="orderPhone"/></div>
     <div class="inline">
-      <button class="primary-btn" id="checkout">${t('order')}</button>
-      <button class="ghost-btn" id="payDemo">${t('payDemo')}</button>
-      <button class="ghost-btn" id="back">←</button>
+      <button class="btn primary" id="toShop">${t('buy')}</button>
+      <button class="btn soft" id="toQuest">${t('quest')}</button>
     </div>
   </section>`;
 
-  app.querySelectorAll('[data-add]').forEach(btn => {
-    btn.onclick = () => { state.cart.push(btn.dataset.add); saveState(); playTone(); renderShop(); };
-  });
-  document.getElementById('checkout').onclick = () => openModal(t('shop'), t('checkoutOk'));
-  document.getElementById('payDemo').onclick = () => openModal('Payment API', 'Демо: подключите Stripe/YooKassa через frontend SDK.');
+  document.getElementById('saveContact').onclick = () => {
+    state.crm.name = document.getElementById('crmName').value.trim();
+    state.crm.phone = document.getElementById('crmPhone').value.trim();
+    save();
+    openModal('CRM', t('done'));
+  };
+  document.getElementById('toShop').onclick = () => setScreen('shop');
+  document.getElementById('toQuest').onclick = () => {
+    if (!state.startedAt) state.startedAt = Date.now();
+    save();
+    setScreen('quest');
+  };
+}
+
+function renderShop() {
+  const cards = products.map(p => {
+    const count = state.cart.filter(id => id === p.id).length;
+    return `<article class="item"><div class="thumb">${p.emoji}</div><div><strong>${productName(p)}</strong><br><small>${p.price} ₽</small></div><button class="btn soft" data-add="${p.id}">${t('add')} (${count})</button></article>`;
+  }).join('');
+  const total = state.cart.reduce((s, id) => s + products.find(p => p.id === id).price, 0);
+
+  app.innerHTML = `
+    <section class="screen glass trapezoid">
+      <h2>${t('shopTitle')}</h2>
+      <div class="grid products">${cards}</div>
+      <div class="kpi">${t('cart')}: ${state.cart.length} / ${total} ₽</div>
+      <div class="inline">
+        <button class="btn primary" id="checkout">${t('checkout')}</button>
+        <button class="btn soft" id="pay">${t('payDemo')}</button>
+        <button class="btn ghost" id="back">←</button>
+      </div>
+    </section>`;
+
+  app.querySelectorAll('[data-add]').forEach(b => b.onclick = () => { state.cart.push(b.dataset.add); save(); ping(); renderShop(); });
+  document.getElementById('checkout').onclick = () => openModal('Order', `${t('done')}. CRM: ${state.crm.name || '-'}`);
+  document.getElementById('pay').onclick = () => openModal('Payment', 'Demo API hook: Stripe / YooKassa SDK.');
   document.getElementById('back').onclick = () => setScreen('home');
 }
 
 function renderQuest() {
-  if (!state.questStartedAt) state.questStartedAt = Date.now();
-  const stage = questStages[state.questStage];
-  if (!stage) return setScreen('reward');
+  const st = questStages[state.questStage];
+  if (!st) return setScreen('reward');
+  if (!state.startedAt) state.startedAt = Date.now();
 
-  const pct = Math.round((state.questStage / questStages.length) * 100);
-  const left = Math.max(0, FIVE_HOURS_MS - (Date.now() - state.questStartedAt));
-  if (left === 0) openModal('Time', 'Лимит 5 часов исчерпан. Можно начать заново.');
+  const narrative = stageNarratives[state.questStage % stageNarratives.length];
+  const left = Math.max(0, LIMIT_MS - (Date.now() - state.startedAt));
+  const progress = Math.round((state.questStage / questStages.length) * 100);
 
   app.innerHTML = `
-    <section class="screen card">
-      <h2>${t('questTitle')}</h2>
-      <div class="progress-wrap">
-        <div>${t('stage')} ${state.questStage + 1}/10</div>
-        <div class="progress"><span style="width:${pct}%"></span></div>
-        <div class="badge">${t('timerLeft')}: ${formatDuration(left)}</div>
-      </div>
-      <h3>${t('findPoint')}: ${stage.point}</h3>
-      <p>${t('qrInstruction')}</p>
-      <button class="primary-btn" id="scanBtn">${t('scanQr')}</button>
-      <div id="taskArea"></div>
-      <button class="ghost-btn" id="home">←</button>
-    </section>`;
+  <section class="screen glass trapezoid">
+    <h2>${t('questTitle')}</h2>
+    <div class="progress"><span style="width:${progress}%"></span></div>
+    <div class="badge">${t('stage')} ${state.questStage + 1}/10 · ${t('timer')}: ${fmt(left)}</div>
 
-  document.getElementById('scanBtn').onclick = () => startQrScan(stage.qr);
+    <article class="quote">${narrative.quote[state.lang]}</article>
+    <article class="fact">${narrative.fact[state.lang]}</article>
+    <article class="story">${narrative.story[state.lang]}</article>
+
+    <div class="kpi"><strong>${t('findPoint')}:</strong> ${st.point}</div>
+    <button class="btn primary" id="scan">${t('scan')}</button>
+    <div id="taskArea"></div>
+    <button class="btn ghost" id="home">←</button>
+  </section>`;
+
+  document.getElementById('scan').onclick = () => startScan(st.qr);
   document.getElementById('home').onclick = () => setScreen('home');
-  renderStageTask(stage);
 
-  clearInterval(timerTick);
-  timerTick = setInterval(() => {
-    if (state.screen === 'quest') renderQuest();
-  }, 1000);
+  renderTask(st);
+  setTimeout(() => { if (state.screen === 'quest') renderQuest(); }, 1000);
 }
 
-function renderStageTask(stage) {
-  const task = document.getElementById('taskArea');
-  const q = stage.q[state.lang] || stage.q.ru;
-
-  if (!state.answers[`qr_${state.questStage}`]) {
-    task.innerHTML = '<p class="badge">QR required</p>';
+function renderTask(stage) {
+  const container = document.getElementById('taskArea');
+  if (!state.stageUnlocked[state.questStage]) {
+    container.innerHTML = `<div class="kpi">${t('qrNeeded')}</div>`;
     return;
   }
 
   if (stage.type === 'choice') {
-    const opts = stage.options.map(o => {
+    const options = stage.options.map(o => {
       const label = state.lang === 'ru' ? o[1] : state.lang === 'en' ? o[2] : o[3];
-      return `<button class="secondary-btn" data-opt="${o[0]}">${label}</button>`;
+      return `<button class="btn soft" data-opt="${o[0]}">${label}</button>`;
     }).join('');
-    task.innerHTML = `<p>${q}</p><div class="answer-grid">${opts}</div>`;
-    task.querySelectorAll('[data-opt]').forEach(btn => {
-      btn.onclick = () => {
-        if (btn.dataset.opt === stage.correct) advanceStage();
-        else openModal('✖', 'Попробуйте другой вариант.');
-      };
-    });
+    container.innerHTML = `<div class="row"><label>${stage.q[state.lang]}</label></div><div class="inline">${options}</div>`;
+    container.querySelectorAll('[data-opt]').forEach(btn => btn.onclick = () => btn.dataset.opt === stage.correct ? nextStage() : openModal('✖', 'Try again'));
   }
 
   if (stage.type === 'text') {
-    task.innerHTML = `<p>${q}</p><input id="textAnswer" placeholder="${t('answerPlaceholder')}"/><button class="primary-btn" id="sendText">${t('submit')}</button>`;
-    document.getElementById('sendText').onclick = () => {
-      const val = document.getElementById('textAnswer').value.trim().toLowerCase();
-      if (stage.answer.includes(val)) advanceStage();
-      else openModal('✖', 'Ответ не совпал.');
+    container.innerHTML = `<div class="row"><label>${stage.q[state.lang]}</label><input id="ans" placeholder="${t('answerPh')}" /></div><button id="send" class="btn primary">${t('submit')}</button>`;
+    document.getElementById('send').onclick = () => {
+      const v = document.getElementById('ans').value.trim().toLowerCase();
+      if (stage.answer.includes(v)) nextStage();
+      else openModal('✖', 'Incorrect');
     };
   }
 
   if (stage.type === 'photo') {
-    const prev = state.photos[state.questStage] ? `<img class="photo-preview" src="${state.photos[state.questStage]}"/>` : '';
-    task.innerHTML = `<p>${q}</p><input type="file" accept="image/*" id="photoInput"/><div>${prev}</div><button class="primary-btn" id="confirmPhoto">${t('submit')}</button>`;
-    document.getElementById('photoInput').onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
+    const preview = state.photos[state.questStage] ? `<img class="photo-preview" src="${state.photos[state.questStage]}" />` : '';
+    container.innerHTML = `<div class="row"><label>${stage.q[state.lang]}</label><input id="photo" type="file" accept="image/*" /></div>${preview}<button id="okPhoto" class="btn primary">${t('submit')}</button>`;
+    document.getElementById('photo').onchange = (e) => {
+      const file = e.target.files[0]; if (!file) return;
       const fr = new FileReader();
-      fr.onload = () => {
-        state.photos[state.questStage] = fr.result;
-        saveState();
-        renderStageTask(stage);
-      };
+      fr.onload = () => { state.photos[state.questStage] = fr.result; save(); renderTask(stage); };
       fr.readAsDataURL(file);
     };
-    document.getElementById('confirmPhoto').onclick = () => {
-      if (state.photos[state.questStage]) advanceStage();
-      else openModal('Фото', 'Сначала загрузите фото.');
-    };
+    document.getElementById('okPhoto').onclick = () => state.photos[state.questStage] ? nextStage() : openModal('Photo', 'Upload photo first');
   }
 }
 
-function advanceStage() {
-  playTone(730, 110);
+function nextStage() {
   state.questStage += 1;
-  saveState();
+  save();
+  ping(720, 100);
   if (state.questStage >= questStages.length) setScreen('reward');
   else renderQuest();
 }
 
 function renderReward() {
-  const choices = products.map(p => `<button class="secondary-btn" data-reward="${p.id}">${p.emoji} ${p.name[state.lang]}</button>`).join('');
-  const picked = state.reward ? products.find(p => p.id === state.reward) : null;
+  const options = products.map(p => `<button class="btn soft" data-reward="${p.id}">${p.emoji} ${productName(p)}</button>`).join('');
+  const r = products.find(p => p.id === state.reward);
 
   app.innerHTML = `
-    <section class="screen card">
-      <h2>${t('finished')}</h2>
-      <div class="answer-grid">${choices}</div>
-      ${picked ? `<div class="card" style="padding:12px;background:#fff;">
-        <h3>${t('certificate')}</h3>
-        <p>${t('reward')}: ${picked.emoji} ${picked.name[state.lang]}</p>
-        <p><strong>${t('obtained')}</strong></p>
-      </div>` : ''}
-      <button class="ghost-btn" id="backHome">←</button>
+    <section class="screen glass trapezoid">
+      <h2>${t('rewardTitle')}</h2>
+      <div class="inline">${options}</div>
+      ${r ? `<article class="kpi"><h3>${t('certificate')}</h3><p>${r.emoji} ${productName(r)} — <strong>${t('obtained')}</strong></p></article>` : ''}
+      <button class="btn primary" id="toThanks">${t('done')}</button>
     </section>`;
 
-  app.querySelectorAll('[data-reward]').forEach(btn => {
-    btn.onclick = () => {
-      state.reward = btn.dataset.reward;
-      saveState();
-      confettiBurst();
-      renderReward();
-    };
+  app.querySelectorAll('[data-reward]').forEach(btn => btn.onclick = () => {
+    state.reward = btn.dataset.reward;
+    save();
+    launchConfetti();
+    renderReward();
   });
-  document.getElementById('backHome').onclick = () => setScreen('home');
+  document.getElementById('toThanks').onclick = () => setScreen('thanks');
 }
 
-function setScreen(screen) { state.screen = screen; saveState(); render(); }
+function renderThanks() {
+  app.innerHTML = `
+    <section class="screen glass trapezoid">
+      <h2>${t('thanksTitle')}</h2>
+      <div class="kpi">${t('cashier')}</div>
+      <div class="crm">
+        <p><strong>${t('name')}:</strong> ${state.crm.name || '-'}</p>
+        <p><strong>${t('phone')}:</strong> ${state.crm.phone || '-'}</p>
+        <p><strong>ID:</strong> KS-${String(Date.now()).slice(-6)}-${state.questStage}</p>
+      </div>
+      <button class="btn primary" id="issue">${t('issuePrize')}</button>
+      ${state.prizeIssued ? `<span class="badge">${t('issued')}</span>` : ''}
+      <button class="btn ghost" id="homeFromThanks">←</button>
+    </section>`;
+
+  document.getElementById('issue').onclick = () => {
+    state.prizeIssued = true;
+    save();
+    openModal('CRM', t('issued'));
+    renderThanks();
+  };
+  document.getElementById('homeFromThanks').onclick = () => setScreen('home');
+}
+
+async function startScan(expected) {
+  document.getElementById('qrPanel').classList.remove('hidden');
+  document.getElementById('qrTitle').textContent = `${t('stage')} ${state.questStage + 1}`;
+  document.getElementById('stopQr').textContent = t('stop');
+  try {
+    qrScanner = new Html5Qrcode('reader');
+    await qrScanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 220 }, (text) => {
+      if (text.trim() === expected) {
+        state.stageUnlocked[state.questStage] = true;
+        save();
+        stopScan();
+        renderTask(questStages[state.questStage]);
+      } else openModal('QR', t('qrFail'));
+    });
+  } catch {
+    openModal('QR', t('noCamera'));
+    stopScan();
+  }
+}
+
+function stopScan() {
+  document.getElementById('qrPanel').classList.add('hidden');
+  if (qrScanner) qrScanner.stop().then(() => qrScanner.clear()).catch(() => {});
+  qrScanner = null;
+  document.getElementById('reader').innerHTML = '';
+}
 
 function openModal(title, text) {
-  modalTitle.textContent = title;
-  modalText.textContent = text;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
   modal.classList.remove('hidden');
 }
 
-document.getElementById('modalClose').onclick = () => modal.classList.add('hidden');
-langSelect.onchange = () => { state.lang = langSelect.value; saveState(); render(); };
-document.getElementById('soundToggle').onclick = () => {
-  state.soundOn = !state.soundOn;
-  saveState();
-  document.getElementById('soundToggle').textContent = state.soundOn ? '🔊' : '🔇';
-};
-
-document.getElementById('stopQrBtn').onclick = stopQr;
-document.getElementById('qrTitle').textContent = 'QR';
-document.getElementById('stopQrBtn').textContent = t('stopQr');
-
-async function startQrScan(expectedCode) {
-  const panel = document.getElementById('qrPanel');
-  panel.classList.remove('hidden');
-  document.getElementById('stopQrBtn').textContent = t('stopQr');
-
-  try {
-    qrScanner = new Html5Qrcode('reader');
-    await qrScanner.start(
-      { facingMode: 'environment' },
-      { fps: 10, qrbox: 220 },
-      (decodedText) => {
-        if (decodedText.trim() === expectedCode) {
-          state.answers[`qr_${state.questStage}`] = true;
-          saveState();
-          stopQr();
-          renderQuest();
-        } else openModal('QR', t('qrFail'));
-      }
-    );
-  } catch {
-    openModal('QR', t('noCamera'));
-    stopQr();
-  }
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return `${h}:${m}:${sec}`;
 }
 
-function stopQr() {
-  const panel = document.getElementById('qrPanel');
-  panel.classList.add('hidden');
-  if (qrScanner) {
-    qrScanner.stop().then(() => qrScanner.clear()).catch(() => {});
-    qrScanner = null;
-  }
-  const reader = document.getElementById('reader');
-  reader.innerHTML = '';
-}
-
-function formatDuration(ms) {
-  const sec = Math.floor(ms / 1000);
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
-
-function confettiBurst() {
-  const canvas = document.getElementById('confettiCanvas');
+function launchConfetti() {
+  const canvas = document.getElementById('confetti');
   const ctx = canvas.getContext('2d');
   canvas.width = innerWidth;
   canvas.height = innerHeight;
-
-  const pieces = Array.from({ length: 120 }, () => ({
+  const bits = Array.from({ length: 130 }, () => ({
     x: Math.random() * canvas.width,
     y: -20,
-    r: Math.random() * 6 + 3,
-    c: ['#f8a5c2', '#7bc8a4', '#ffd166', '#9b5de5'][Math.floor(Math.random() * 4)],
-    vx: Math.random() * 3 - 1.5,
-    vy: Math.random() * 4 + 2
+    vx: Math.random() * 2 - 1,
+    vy: Math.random() * 3 + 2,
+    c: ['#c97b63', '#8cbdb1', '#ffd7bd', '#ffffff'][Math.floor(Math.random() * 4)],
+    r: Math.random() * 6 + 2
   }));
-
-  let frame = 0;
-  function draw() {
+  let f = 0;
+  const draw = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    pieces.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      ctx.fillStyle = p.c;
-      ctx.fillRect(p.x, p.y, p.r, p.r);
-    });
-    frame += 1;
-    if (frame < 160) requestAnimationFrame(draw);
-  }
+    bits.forEach(b => { b.x += b.vx; b.y += b.vy; ctx.fillStyle = b.c; ctx.fillRect(b.x, b.y, b.r, b.r); });
+    if (f++ < 170) requestAnimationFrame(draw);
+  };
   draw();
 }
 
+function setScreen(screen) { state.screen = screen; save(); render(); }
+
+document.getElementById('modalClose').onclick = () => modal.classList.add('hidden');
+document.getElementById('stopQr').onclick = stopScan;
+langSelect.onchange = () => { state.lang = langSelect.value; save(); render(); };
+document.getElementById('soundBtn').onclick = () => {
+  state.sound = !state.sound;
+  document.getElementById('soundBtn').textContent = state.sound ? '🔊' : '🔇';
+  save();
+};
+
+document.getElementById('soundBtn').textContent = state.sound ? '🔊' : '🔇';
 render();

@@ -3,49 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Калык шынык — Банк покупок</title>
+  <title>Калык шынык — Банк покупок PRO</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/html5-qrcode" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="ornament ornament-top" aria-hidden="true"></div>
-  <div class="ornament ornament-bottom" aria-hidden="true"></div>
+  <div class="bg-gradient" aria-hidden="true"></div>
+  <svg class="ethno ethno-top" viewBox="0 0 240 120" aria-hidden="true">
+    <path d="M0 60 L40 20 L80 60 L120 20 L160 60 L200 20 L240 60" />
+  </svg>
+  <svg class="ethno ethno-bottom" viewBox="0 0 240 120" aria-hidden="true">
+    <path d="M0 60 L40 100 L80 60 L120 100 L160 60 L200 100 L240 60" />
+  </svg>
 
-  <header class="topbar card">
-    <div class="brand-block">
-      <div class="logo-sun" aria-hidden="true">☀</div>
+  <header class="topbar glass trapezoid">
+    <div class="brand">
+      <div class="brand-mark">☀</div>
       <div>
-        <h1 id="brandTitle">Калык шынык</h1>
-        <p id="brandSubtitle">Банк покупок</p>
+        <h1>Калык шынык</h1>
+        <p id="subtitle">Банк покупок</p>
       </div>
     </div>
-    <div class="toolbar">
-      <select id="languageSelect" aria-label="Language selector">
-        <option value="ru">RU</option>
-        <option value="en">EN</option>
-        <option value="mari">Mari</option>
-      </select>
-      <button id="soundToggle" class="ghost-btn" type="button">🔊</button>
+    <div class="actions">
+      <select id="lang"></select>
+      <button id="soundBtn" class="btn soft" type="button">🔊</button>
     </div>
   </header>
 
   <main id="app" class="app"></main>
 
-  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-content card">
+  <aside id="qrPanel" class="overlay hidden">
+    <section class="panel glass trapezoid">
+      <h3 id="qrTitle"></h3>
+      <div id="reader"></div>
+      <button id="stopQr" class="btn soft" type="button"></button>
+    </section>
+  </aside>
+
+  <aside id="modal" class="overlay hidden">
+    <section class="panel glass trapezoid">
       <h3 id="modalTitle"></h3>
       <p id="modalText"></p>
-      <button id="modalClose" class="primary-btn" type="button">OK</button>
-    </div>
-  </div>
+      <button id="modalClose" class="btn primary" type="button">OK</button>
+    </section>
+  </aside>
 
-  <section id="qrPanel" class="qr-panel hidden card">
-    <h3 id="qrTitle"></h3>
-    <div id="reader" class="reader"></div>
-    <button id="stopQrBtn" class="secondary-btn" type="button"></button>
-  </section>
-
-  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+  <canvas id="confetti"></canvas>
 </body>
 </html>
