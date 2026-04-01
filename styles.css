@@ -1,0 +1,177 @@
+:root {
+  --bg: #e0f2e9;
+  --card: #fff3e0;
+  --accent: #ffe4ec;
+  --text: #2f3b37;
+  --ok: #2e7d32;
+  --warn: #d84315;
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  margin: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.brand-block { display: flex; align-items: center; gap: 10px; }
+.logo-sun {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent);
+  box-shadow: inset 0 0 0 2px #ffc6d7;
+}
+#brandTitle { margin: 0; font-size: 1.1rem; }
+#brandSubtitle { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.8; }
+
+.toolbar { display: flex; gap: 8px; align-items: center; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.app {
+  margin: 12px;
+  padding-bottom: 88px;
+  animation: fadeIn .35s ease;
+}
+
+.screen {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.primary-btn, .secondary-btn, .ghost-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.primary-btn { background: #f8a5c2; }
+.secondary-btn { background: #b7e4c7; }
+.ghost-btn { background: #fff; }
+.primary-btn:hover, .secondary-btn:hover, .ghost-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .12);
+}
+
+.grid-products {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.product {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fff9ef;
+}
+.product-image {
+  width: 84px; height: 84px; border-radius: 10px;
+  background: linear-gradient(145deg, #fde1e8, #f6f1d6);
+  display: grid; place-items: center;
+  font-size: 1.8rem;
+}
+
+label { font-weight: 600; font-size: .95rem; }
+input, select {
+  width: 100%;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+
+.row { display: grid; gap: 8px; }
+.progress-wrap { display: grid; gap: 6px; }
+.progress {
+  height: 10px;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #7bc8a4, #f8a5c2);
+  width: 0;
+  transition: width .3s ease;
+}
+
+.answer-grid { display: grid; gap: 8px; }
+.inline { display: flex; gap: 8px; align-items: center; }
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: .82rem;
+}
+
+.photo-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.ornament {
+  position: fixed;
+  width: 140px;
+  height: 140px;
+  opacity: .25;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, #ffc1d6 18%, transparent 19%),
+                    conic-gradient(from 90deg, #8ec5a4 25%, transparent 0 50%, #f7c6d9 0 75%, transparent 0);
+  border-radius: 50%;
+}
+.ornament-top { right: -40px; top: -40px; }
+.ornament-bottom { left: -40px; bottom: -40px; }
+
+.modal, .qr-panel {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .35);
+  padding: 16px;
+}
+.hidden { display: none !important; }
+.modal-content, .qr-panel.card { width: min(560px, 100%); padding: 16px; }
+.reader { width: 100%; min-height: 240px; overflow: hidden; border-radius: 12px; background: #fff; }
+
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 900px) {
+  .app { max-width: 960px; margin: 16px auto 80px; }
+  .grid-products { grid-template-columns: repeat(2, 1fr); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калык шынык — Банк покупок</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="ornament ornament-top" aria-hidden="true"></div>
+  <div class="ornament ornament-bottom" aria-hidden="true"></div>
+
+  <header class="topbar card">
+    <div class="brand-block">
+      <div class="logo-sun" aria-hidden="true">☀</div>
+      <div>
+        <h1 id="brandTitle">Калык шынык</h1>
+        <p id="brandSubtitle">Банк покупок</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <select id="languageSelect" aria-label="Language selector">
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
+        <option value="mari">Mari</option>
+      </select>
+      <button id="soundToggle" class="ghost-btn" type="button">🔊</button>
+    </div>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content card">
+      <h3 id="modalTitle"></h3>
+      <p id="modalText"></p>
+      <button id="modalClose" class="primary-btn" type="button">OK</button>
+    </div>
+  </div>
+
+  <section id="qrPanel" class="qr-panel hidden card">
+    <h3 id="qrTitle"></h3>
+    <div id="reader" class="reader"></div>
+    <button id="stopQrBtn" class="secondary-btn" type="button"></button>
+  </section>
+
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+</body>
+</html>
