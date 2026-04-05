@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калык шынык — Банк покупок / Event Product</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <svg class="orn orn-top" viewBox="0 0 280 120" aria-hidden="true"><path d="M0 60L40 20L80 60L120 20L160 60L200 20L240 60L280 20"/></svg>
+  <svg class="orn orn-bottom" viewBox="0 0 280 120" aria-hidden="true"><path d="M0 60L40 100L80 60L120 100L160 60L200 100L240 60L280 100"/></svg>
+
+  <header class="top glass trap">
+    <div class="brand"><span>☀</span><div><h1>Калык шынык</h1><p id="sub"></p></div></div>
+    <div class="head-actions">
+      <select id="lang"></select>
+      <button id="sound" class="btn ghost">🔊</button>
+    </div>
+  </header>
+
+  <nav class="top-nav glass trap" id="mainNav"></nav>
+  <main id="app"></main>
+
+  <aside id="qrOverlay" class="overlay hidden"><section class="modal glass trap"><h3 id="qrHeader"></h3><div id="reader"></div><button id="stopQr" class="btn ghost"></button></section></aside>
+  <aside id="modal" class="overlay hidden"><section class="modal glass trap"><h3 id="modalTitle"></h3><p id="modalText"></p><button id="modalClose" class="btn primary">OK</button></section></aside>
+  <canvas id="confetti"></canvas>
+</body>
+</html>
